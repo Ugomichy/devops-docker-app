@@ -1,26 +1,34 @@
-- name: Deploy to EC2 via SSH
-  uses: appleboy/ssh-action@v0.1.10
-  with:
-    host: 3.123.1.42
-    username: ubuntu
-    key: ${{ secrets.EC2_SSH_KEY }}
-    port: 22
-    script: |
-      echo "Connected to EC2 successfully "
+name: Deploy App
 
-      mkdir -p devops-docker-app
-      cd devops-docker-app
+on:
+  push:
+    branches:
+      - main
 
-      if [ ! -d ".git" ]; then
-        git clone https://github.com/Ugomichy/devops-docker-app.git .
-      else
-        git pull origin main
-      fi
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-      docker stop my-app || true
-      docker rm my-app || true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      docker build -t my-app .
-      docker run -d -p 80:80 --name my-app my-app
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 3.123.1.42
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "Connected to EC2"
 
-      echo "Deployment complete "
+            cd ~/app || mkdir ~/app && cd ~/app
+
+            git clone https://github.com/Ugomichy/devops-docker-app.git . || true
+
+            docker stop myapp || true
+            docker rm myapp || true
+
+            docker build -t myapp .
+            docker run -d -p 80:80 --name myapp myapp
