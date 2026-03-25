@@ -1,4 +1,4 @@
-name: Test SSH Only
+name: Debug SSH Runner
 
 on:
   push:
@@ -6,18 +6,15 @@ on:
       - main
 
 jobs:
-  test-ssh:
+  debug:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test SSH connection
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: 3.123.1.42
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            echo "SUCCESS: Connected to EC2"
-            whoami
-            pwd
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Start tmate session
+        uses: mxschmitt/action-tmate@v3
+
+      - name: Keep job running
+        run: sleep 600
