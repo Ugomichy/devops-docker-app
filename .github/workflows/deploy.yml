@@ -1,4 +1,4 @@
-name: Debug SSH Runner
+name: Deploy to EC2
 
 on:
   push:
@@ -6,15 +6,21 @@ on:
       - main
 
 jobs:
-  debug:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start tmate session
-        uses: mxschmitt/action-tmate@v3
+      - name: Create SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
+          chmod 600 key.pem
 
-      - name: Keep job running
-        run: sleep 600
+      - name: Connect and Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.123.1.42 << 'EOF'
+            cd /home/ubuntu
+            echo "Connected successfully"
+          EOF
