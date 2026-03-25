@@ -1,18 +1,4 @@
-ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.123.1.42 << 'EOF'
-  cd /home/ubuntu
-
-  # Clone repo if not exists
-  if [ ! -d "devops-docker-app" ]; then
-    git clone https://github.com/Ugomichy/devops-docker-app.git
-  fi
-
-  cd devops-docker-app
-
-  git pull origin main
-
-  docker-compose down
-  docker-compose up -d --build
-EOFname: Deploy to EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -32,9 +18,19 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-      - name: Connect and Deploy
+      - name: Deploy app to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.123.1.42 << 'EOF'
             cd /home/ubuntu
-            echo "Connected successfully"
+
+            if [ ! -d "devops-docker-app" ]; then
+              git clone https://github.com/Ugomichy/devops-docker-app.git
+            fi
+
+            cd devops-docker-app
+
+            git pull origin main
+
+            docker-compose down
+            docker-compose up -d --build
           EOF
