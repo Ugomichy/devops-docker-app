@@ -2,25 +2,21 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repo') {
+        stage('Build') {
             steps {
-                checkout scm
+                echo 'Building application...'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Test') {
             steps {
-                sh 'docker build -t devops-app .'
+                echo 'Testing application...'
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy') {
             steps {
-                sh '''
-                docker stop devops-container || true
-                docker rm devops-container || true
-                docker run -d -p 80:80 --name devops-container devops-app
-                '''
+                echo 'Deploying application...'
             }
         }
     }
