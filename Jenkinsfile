@@ -9,15 +9,15 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                echo 'Testing application...'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application...'
-            }
-        }
+            stage('Deploy') {
+    steps {
+        sh '''
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@18.195.201.40 << 'EOF'
+        cd devops-docker-app
+        git pull
+        docker-compose down
+        docker-compose up -d --build
+        EOF
+        '''
     }
 }
