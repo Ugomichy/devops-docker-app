@@ -16,9 +16,9 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                sh '''
-ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/workspace/devops-docker-pipeline/key.pem ubuntu@18.185.60.7 << EOF
+    steps {
+        sh """
+ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/workspace/devops-docker-pipeline/key.pem ubuntu@18.185.60.7 << 'EOF'
 cd ~
 
 if [ ! -d "devops-docker-app" ]; then
@@ -30,9 +30,6 @@ git pull
 docker-compose down
 docker-compose up -d --build
 EOF
-'''
-            }
-        }
-
+"""
     }
 }
