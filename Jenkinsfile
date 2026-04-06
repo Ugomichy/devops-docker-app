@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Build') {
             steps {
                 echo 'Building application...'
@@ -14,11 +15,9 @@ pipeline {
             }
         }
 
-     
-
-stage('Deploy') {
-    steps {
-        sh '''
+        stage('Deploy') {
+            steps {
+                sh '''
 ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/workspace/devops-docker-pipeline/key.pem ubuntu@18.185.60.7 << EOF
 cd ~
 
@@ -32,5 +31,8 @@ docker-compose down
 docker-compose up -d --build
 EOF
 '''
+            }
+        }
+
     }
 }
