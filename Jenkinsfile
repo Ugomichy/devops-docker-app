@@ -16,20 +16,25 @@ pipeline {
         }
 
         stage('Deploy') {
-    steps {
-        sh """
-ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/workspace/devops-docker-pipeline/key.pem ubuntu@18.185.60.7 << 'EOF'
-cd ~
+            steps {
+                sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@18.185.60.7 << EOF
 
-if [ ! -d "devops-docker-app" ]; then
-    git clone https://github.com/ugomichy/devops-docker-app.git
-fi
+                cd ~
 
-cd devops-docker-app
-git pull
-docker-compose down
-docker-compose up -d --build
-EOF
-"""
+                if [ ! -d "devops-docker-app" ]; then
+                    git clone https://github.com/ugomichy/devops-docker-app.git
+                fi
+
+                cd devops-docker-app
+                git pull
+
+                docker compose down
+                docker compose up -d --build
+
+                EOF
+                '''
+            }
+        }
     }
 }
